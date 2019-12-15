@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import 'lib-flexible/flexible'
-
+import VeeValidate from 'vee-validate'
 import App from './App.vue'
 import router from './router/index'
 import Header from './components/Header/Header.vue';
@@ -8,6 +8,7 @@ import store from './vuex/store'
 Vue.config.productionTip = false
 
 // 注册全局组件
+Vue.use(VeeValidate)
 Vue.component('Header', Header)
 new Vue({
  

@@ -12,14 +12,11 @@ export default {
   components: {
     FooterGuide
   },
-  computed:{
-    ...mapState(['latitude','longitude'])
-
-  },
+ 
   mounted() {
     // 通知action异步获取address并保存到state
     console.log(this);
-    this.$store.dispatch("getAddress",this.latitude,this.longitude);
+    this.$store.dispatch("getAddress");
   }
 };
 </script>
