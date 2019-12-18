@@ -17,6 +17,7 @@ export default {
     // 通知action异步获取address并保存到state
     console.log(this);
     this.$store.dispatch("getAddress");
+    this.$store.dispatch('autoLogin')
   }
 };
 </script>
