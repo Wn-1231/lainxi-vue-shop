@@ -7,7 +7,6 @@
 
 <script type="text/ecmascript-6">
 import FooterGuide from "./components/FootertGuide/FooterGuide";
-import {mapState,} from 'vuex'
 export default {
   components: {
     FooterGuide

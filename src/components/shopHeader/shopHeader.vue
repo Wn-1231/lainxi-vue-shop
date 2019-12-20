@@ -40,7 +40,7 @@
       <div class="discounts-left">
         <div class="activity" :class="supportClasses[info.supports[0].type]"> 
           <span class="content-tag">
-            <span class="mini-tag">{{info.supports[0].name}}</span>
+           <span class="mini-tag">{{info.supports[0].name}}</span>
           </span>
           <span class="activity-content ellipsis">{{info.supports[0].content}}</span>
         </div>
@@ -114,6 +114,7 @@
 <script type="text/ecmascript-6">
   import {mapState} from 'vuex'
   export default {
+    name:'ShopHeader',
     data () {
       return {
         supportClasses: ['activity-green', 'activity-red', 'activity-orange'],
@@ -123,7 +124,10 @@
     },
 
     computed: {
-      ...mapState(['info'])
+      ...mapState({
+          info: state => state.shop.info
+      })
+      
     }
   }
 </script>

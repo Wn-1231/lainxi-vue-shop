@@ -13,7 +13,6 @@
       </div>
     </div>
     <router-view></router-view>
-
   </div> 
 </template>
 
@@ -26,9 +25,10 @@
       this.$store.dispatch('getShopGoods')
       this.$store.dispatch('getShopRatings')
     },
+    
 
     components: {
-      ShopHeader
+      ShopHeader,
     }
   }
 </script>

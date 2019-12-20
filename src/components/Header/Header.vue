@@ -11,6 +11,7 @@
 
 <script type="text/ecmascript-6">
   export default {
+    name:'Header',
     props:['title']
   }
 </script>

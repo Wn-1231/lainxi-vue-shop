@@ -102,10 +102,12 @@ import { mapState } from "vuex";
 export default {
   name:'Profile',
   computed:{
-    ...mapState(['user'])
+    ...mapState({
+      user :(state)=> state.user.user 
+    })
   },
+
   mounted(){
-    console.log(this);
   }
 
 

@@ -91,7 +91,12 @@ import chunk from "lodash/chunk";
 export default {
   name:'Msite',
   computed: {
-    ...mapState(["address", "latitude", "categorys", "longitude", "shops"]),
+  ...mapState({
+    address: state => state.msite.address, // state是总状态, 函数的返回就是计算属性值
+    categorys: state => state.msite.categorys, 
+    shops: state => state.msite.shops, 
+  }),
+
     //计算属性，把categorys 置成二维数组
     getCategorys() {
       /*   let bigArr = [];

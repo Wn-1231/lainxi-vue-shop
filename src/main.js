@@ -7,6 +7,7 @@ import router from './router/index'
 import Header from './components/Header/Header.vue';
 import store from './vuex/store'
 import Star from "./components/star/star.vue";
+import Food from "./components/Food/Food.vue";
 import './validate'
 import * as API from '@/api'
 import './mock/mock-server'
@@ -16,6 +17,7 @@ Vue.config.productionTip = false
 Vue.use(VeeValidate)
 Vue.component('Header', Header)
 Vue.component('Star', Star)
+Vue.component('Food', Food) 
 Vue.component(Button.name, Button)  // mt-button
 
 //把所有请求挂在vm原型

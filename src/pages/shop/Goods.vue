@@ -2,9 +2,12 @@
   <div>
     <div class="goods">
       <div class="menu-wrapper" ref="left">
-        <ul>
-          <!-- current -->
-          <li class="menu-item" v-for="(good, index) in goods" :key="good.name" >
+        <ul ref="leftUl">
+          <li class="menu-item" 
+          :class="{current:index === currentIndex}" 
+          v-for="(good, index) in goods" :key="good.name" 
+          @click="clickItem(index)"
+          >
             <span class="text bottom-border-1px">
               <img class="icon" :src="good.icon" v-if="good.icon">
               {{good.name}}
@@ -17,7 +20,7 @@
           <li class="food-list-hook" v-for="(good, index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index">
+              <li  @click="ShowFood(food)" class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon">
                 </div>
@@ -32,7 +35,7 @@
                     <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    CartControl组件
+                   <CartControl :food=food></CartControl>
                   </div>
                 </div>
               </li>
@@ -40,34 +43,124 @@
           </li>
         </ul>
       </div>
+      <ShopCart/>
     </div>
+    <Food :food = food  ref="food"> </Food>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
   import {mapState} from 'vuex'
+  import CartControl from "../../components/CartControl/CartControl";
+  import Food from "../../components/Food/Food";
+  import ShopCart from "../../components/shopCart/shopCart";
   export default {
+    name:'Goods',
     data () {
       return {
-      
+        // 1). 右侧列表滑动的Y轴坐标: scrollY  在滑动过程中不断改变
+        scrollY: 0,
+        // 2). 右侧每个分类<li>的top值的数组tops: 第一次列表显示后统计后面不再变化
+        tops: [],
+
+        //因为点击只能显示一次，所以把每次的状态保存一下在显示
+        food:{}
       }
     },
-    computed:{
-      ...mapState(['goods'])
+    components:{
+      CartControl,
+      Food,
+      ShopCart
     },
-    mounted(){
+    computed:{
+      ...mapState({
+        goods:(state)=>state.shop.goods 
+      }),
+    
+       currentIndex(){  //通过计算属性通过当前的位置计算对应的下标
+        let index = this.tops.findIndex((top,index )=> this.scrollY >=top && this.scrollY<this.tops[index+1])
+      //  this.index  = index    写在这，每次判断都是相等
+        if (this.index !== index && this.leftScroll ) {  
+          this.index  = index  //每次滑动读取时候，把的当前的index存一下
+          console.log(1);
+          let li = this.$refs.leftUl.children[index]
+          this.leftScroll.scrollToElement(li, 300)  
+        }
+        return index
+       } 
+
+
+    },
+    methods:{
+      //点击保存对应的Food数据用于读取
+      ShowFood(food){
+        this.$refs.food.toggleShow()
+        this.food = food
+      },
+
+      //newscroll
+      initScroll () {
+        this.leftScroll = new BScroll(this.$refs.left, {
+          click: true
+
+        })
+        this.rightScroll = new BScroll(this.$refs.right, {
+            probeType: 1, 
+            click: true,
+          })
+
+        //给滑动榜监听，过去滑动结束的位置
+        this.rightScroll.on('scrollEnd',(y,x)=>{
+          let Y =y.y
+          this.scrollY = Math.abs(Y)
+        })
+
+        //给滑动榜监听，实时过去滑动的位置
+         this.rightScroll.on('scrollEnd', ({x, y}) => {
+          this.scrollY = Math.abs(y)
+        })   
+      }, 
       
-      new BScroll(this.$refs.left,{})
-      new BScroll(this.$refs.right,{})
+      //点击左侧导航切换右列表
+      clickItem(index){
+        const top =this.tops[index]
+        this.scrollY = top
+        //通过库方法跳到指定的位置
+        this.rightScroll.scrollTo(0,-top,200)
+      },
+
+
+      //初始化加工数组
+      initTops(){  
+        let arr = []
+        let top = 0  //初始的第一个位置是0
+        arr.push(top)
+
+        let lis = this.$refs.rightUl.children   //过去所有分类列表没个大li 的宽
+        lis.forEach((li) => {
+          top += li.clientHeight
+          arr.push(top)
+        });
+
+        this.tops = arr 
+        console.log(arr);
+      }
+    },
+    
+    watch:{//监视属性goods的变化
+      goods(){    
+        this.$nextTick(()=>{  //这个方法是数据更新以后调用
+          this.initScroll()
+          this.initTops()
+        })
+      }
     }
- 
   }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "../../common/mixins.styl"
-
   .goods
     display: flex
     position: absolute
