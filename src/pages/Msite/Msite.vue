@@ -36,7 +36,10 @@
       </div>
       <div class="shop_container">
         <ul class="shop_list" v-if="shops.length>0">
-          <li class="shop_li border-1px" v-for="(p,index) in shops" :key="p.id" @click="$router.push('/shop')">
+          <li class="shop_li border-1px" 
+          v-for="(p,index) in shops" 
+          :key="p.id"
+          @click="$router.push(`/shop/${p.id}`)">
             <a>
               <div class="shop_left">
                 <img class="shop_img" :src="'https://fuss10.elemecdn.com' + p.image_path" />
@@ -87,6 +90,7 @@ import Swiper from "swiper";
 import "swiper/css/swiper.css";
 import { mapState } from "vuex";
 import chunk from "lodash/chunk";
+import { reqShop } from "../../api/index";
 
 export default {
   name:'Msite',
@@ -111,7 +115,6 @@ export default {
           smallArr = [];
         }
       });
-      console.log(bigArr); 
        return bigArr;
       */
       //利用函数库g工具  lodash 库

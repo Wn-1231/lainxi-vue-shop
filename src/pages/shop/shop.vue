@@ -3,13 +3,13 @@
     <ShopHeader></ShopHeader>
     <div class="tab">
       <div class="tab-item">
-        <router-link to="/shop/goods" replace>点餐</router-link>
+        <router-link :to="`/shop/${this.id}/goods`" replace>点餐</router-link>
       </div>
       <div class="tab-item">
-        <router-link to="/shop/ratings" replace>评价</router-link>
+        <router-link :to="`/shop/${this.id}/ratings`" replace>评价</router-link>
       </div>
       <div class="tab-item">
-        <router-link to="/shop/info" replace>商家</router-link>
+        <router-link :to="`/shop/${this.id}/info`" replace>商家</router-link>
       </div>
     </div>
     <router-view></router-view>
@@ -18,18 +18,43 @@
 
 <script type="text/ecmascript-6">
   import ShopHeader from "../../components/shopHeader/shopHeader";
+  import { mapState } from "vuex";
+  import { saveCartFoods } from "../../utils/index";
   export default {
-    name:'shop',
-    mounted () {
-      this.$store.dispatch('getShopInfo')
-      this.$store.dispatch('getShopGoods')
-      this.$store.dispatch('getShopRatings')
+    name:'Shop',
+    props:['id'],
+    computed:{
+      ...mapState({
+        //有shop和购物车列表
+        shop: state => state.shop   
+      })
     },
-    
+    mounted () {   //在点击shop组件，挂在时大请求
+      //挂在的时候过去shop
+      this.$store.dispatch('getShop',this.id)
+      
+      //当刷新页面的时候，窗口回被卸载，所以在挂载的时候，
+      //回请求新的数据，所以购物车的东西都回清空
+       window.addEventListener('unload', () => {
+        const {shop:{id}, cartFoods } = this.shop  // 多层解构
+        // 将当前商家的购物车数据保存
+        saveCartFoods(id, cartFoods)
+      })
 
-    components: {
+
+
+    },
+     components: {
       ShopHeader,
-    }
+    },
+    beforeDestroy () { //在刷新界面时不会执行
+      const {shop:{id}, cartFoods } = this.shop  
+      saveCartFoods(id,cartFoods)
+    },
+
+    
+    
+   
   }
 </script>
 

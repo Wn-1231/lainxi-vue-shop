@@ -33,6 +33,8 @@ instance.interceptors.request.use((config) => {
     config.data = qs.stringify(data)
   }
   let token = localStorage.getItem('token_key')
+  // let token = store.state.user.token
+  console.log(token);
 
   if (token) { //有token 头待token去请求
     config.headers['Authorization'] = token
@@ -48,8 +50,6 @@ instance.interceptors.request.use((config) => {
   }
   return config
 })
-
-
 
 //响应拦截                 
 instance.interceptors.response.use(

@@ -23,7 +23,7 @@
         问题2: 开始count值是undefined
         */
         this.$store.dispatch('updateFoodCount', {isAdd, food: this.food})
-      }, 500)
+      }, 1000,{trailing: false})
     }
   }
 </script>

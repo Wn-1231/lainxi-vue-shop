@@ -8,24 +8,29 @@ import {
   RECEIVE_GOODS,
   ADD_FOOD_COUNT,
   REDUCE_FOOD_COUNT,
-  CLEAR_CART
+  CLEAR_CART,
+  RECEIVE_SHOP
 } from '../mutations_type'
 
+import { getCartFoods } from "../../utils/index";
 import {
-  reqGoods,
-  reqRatings,
-  reqInfo
+  // reqGoods,
+  // reqRatings,
+  // reqInfo
+  reqShop
+
 } from '../../api/index'
 
 export default  {
   state: { 
-    goods: [], // 商品列表
-    ratings: [], // 商家评价列表
-    info: {}, // 商家信息
+    // goods: [], // 商品列表
+    // ratings: [], // 商家评价列表
+    // info: {}, // 商家信息
     cartFoods: [], // 购物车中所有food数组
+    shop:{}
   },
   mutations: {
-    [RECEIVE_INFO](state, {info}) {
+    /* [RECEIVE_INFO](state, {info}) {
       state.info = info
     },
     
@@ -35,7 +40,7 @@ export default  {
     
     [RECEIVE_GOODS](state, {goods}) {
       state.goods = goods
-    },
+    }, */
   
     [ADD_FOOD_COUNT](state, {food}) {
       if (food.count) { // food有count
@@ -59,10 +64,15 @@ export default  {
     [CLEAR_CART] (state) {
       state.cartFoods.forEach(food => food.count = 0)
       state.cartFoods = []
+    },
+
+    [RECEIVE_SHOP](state,{shop={}, cartFoods=[]}){
+      state.shop = shop
+      state.cartFoods = cartFoods
     }
   },
   actions: {
-    // 异步获取商家信息
+  /*   // 异步获取商家信息
     async getShopInfo({commit}, cb) {
       const result = await reqInfo()
       if(result.code===0) {
@@ -93,7 +103,7 @@ export default  {
         // 如果组件中传递了接收消息的回调函数, 数据更新后, 调用回调通知调用的组件
         typeof cb==='function' && cb()
       }
-    },
+    }, */
 
     /* 
     更新food中的数量的同步action
@@ -104,6 +114,26 @@ export default  {
       } else {
         commit(REDUCE_FOOD_COUNT, {food})
       }
+    },
+    
+
+    //获取对应的商品列表
+    async getShop({commit, state}, id) {
+
+      if (state.shop.id==id) {
+        return
+      }
+       if (state.shop.id) {  //每次点击下一次的shop，清空上一次的shop，再去请求
+        commit(RECEIVE_SHOP, {}) 
+      }
+      console.log('发请求');
+      let result = await reqShop(id)
+      if (result) {
+        let shop = result.data
+        let cartFoods = getCartFoods(shop)
+        commit(RECEIVE_SHOP, {shop,cartFoods})
+      }
+
     }
   },
   getters: { 

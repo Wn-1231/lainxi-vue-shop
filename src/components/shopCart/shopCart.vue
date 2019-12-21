@@ -60,7 +60,7 @@ import {  CLEAR_CART} from "../../vuex/mutations_type";
       ...mapGetters(['totalCount', 'totalPrice']),  //vuex模块化以后，只有读取转台的时候用函数监听
       ...mapState({
         cartFoods: state => state.shop.cartFoods,
-        info: state => state.shop.info,
+        info: state => state.shop.shop.info || {},
       }),
 
       payText(){
@@ -107,7 +107,6 @@ import {  CLEAR_CART} from "../../vuex/mutations_type";
     },
     methods: {
       toggleShow () {
-        // 只有当有购物项时才切换
         if (this.totalCount>0) {
           this.isShow = !this.isShow
         }

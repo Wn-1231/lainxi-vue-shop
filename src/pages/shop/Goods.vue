@@ -59,14 +59,12 @@
     name:'Goods',
     data () {
       return {
-        // 1). 右侧列表滑动的Y轴坐标: scrollY  在滑动过程中不断改变
-        scrollY: 0,
-        // 2). 右侧每个分类<li>的top值的数组tops: 第一次列表显示后统计后面不再变化
-        tops: [],
-
-        //因为点击只能显示一次，所以把每次的状态保存一下在显示
-        food:{}
+        scrollY: 0,   //获取实时的滑动top值     
+        tops: [],      //初始化把右侧列表每个li 的top值的列表
+        food:{}         //每个
       }
+    },
+    mounted(){
     },
     components:{
       CartControl,
@@ -75,7 +73,7 @@
     },
     computed:{
       ...mapState({
-        goods:(state)=>state.shop.goods 
+        goods:(state)=>state.shop.shop.goods || []
       }),
     
        currentIndex(){  //通过计算属性通过当前的位置计算对应的下标
@@ -83,7 +81,6 @@
       //  this.index  = index    写在这，每次判断都是相等
         if (this.index !== index && this.leftScroll ) {  
           this.index  = index  //每次滑动读取时候，把的当前的index存一下
-          console.log(1);
           let li = this.$refs.leftUl.children[index]
           this.leftScroll.scrollToElement(li, 300)  
         }
@@ -95,13 +92,15 @@
     methods:{
       //点击保存对应的Food数据用于读取
       ShowFood(food){
+        
         this.$refs.food.toggleShow()
         this.food = food
       },
 
       //newscroll
       initScroll () {
-        this.leftScroll = new BScroll(this.$refs.left, {
+        if (!this.leftScroll) {
+          this.leftScroll = new BScroll(this.$refs.left, {
           click: true
 
         })
@@ -119,7 +118,12 @@
         //给滑动榜监听，实时过去滑动的位置
          this.rightScroll.on('scrollEnd', ({x, y}) => {
           this.scrollY = Math.abs(y)
-        })   
+        }) 
+        }else{
+          this.leftScroll.refresh()
+          this.rightScroll.refresh()   //重新统计高度
+        }
+          
       }, 
       
       //点击左侧导航切换右列表
@@ -144,12 +148,20 @@
         });
 
         this.tops = arr 
-        console.log(arr);
       }
     },
+
+    mounted(){  //因为每次切换的时候有卸载组件，所在要挂，判断goods在以后再去new
+      
+      if (this.goods.length>0) {
+        this.initScroll()
+        this.initTops()
+      }
+    },
+
     
     watch:{//监视属性goods的变化
-      goods(){    
+      goods(){
         this.$nextTick(()=>{  //这个方法是数据更新以后调用
           this.initScroll()
           this.initTops()
